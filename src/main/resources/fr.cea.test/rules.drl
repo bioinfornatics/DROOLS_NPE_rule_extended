@@ -1,0 +1,63 @@
+package fr.cea.test;
+
+import fr.cea.test.Car;
+import fr.cea.test.Customer;
+dialect "java"
+
+
+rule "base"
+when
+    //workaround put this here =>  $car : Car( )
+    (
+        (
+            $car := Car( $customer := customer )
+            and
+            exists  Customer(  this == $customer, age > 50  )
+        )
+        or
+        (
+            $car := Car( $customer := customer )
+            and
+            exists  Customer(  this == $customer, age > 30  )
+        )
+    )
+then
+    System.out.println("rule");
+    System.out.println($customer);
+    System.out.println($car);
+end
+
+rule "extended" extends "base"
+when
+    $car := Car( customer == $customer )
+then
+    System.out.println("Extended rule");
+    System.out.println($car);
+end
+
+
+rule "with named label"
+when
+    (
+        (
+            $car := Car( $customer := customer )
+            and
+            exists  Customer(  this == $customer, age > 50  )
+        )
+        or
+        (
+            $car := Car( $customer := customer )
+            and
+            exists  Customer(  this == $customer, age > 30  )
+        )
+    )
+    do[extended]
+    $car := Car( customer == $customer )
+then
+    System.out.println("rule");
+    System.out.println($customer);
+    System.out.println($car);
+then[extended]
+    System.out.println("Extended rule");
+    System.out.println($car);
+end

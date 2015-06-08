@@ -1,0 +1,38 @@
+package fr.cea.test;
+
+import fr.cea.test.Car;
+import fr.cea.test.Customer;
+
+
+rule "Give free parking to customers older than 60"
+    extends "Give 10% discount to customers older than 60"
+dialect "java"
+when
+    (
+        (
+            $customer := Customer(  )
+            and
+            exists Car ( owner == $customer )
+        )
+    )
+then
+    System.out.println("rule");
+    System.out.println($customer);
+    insert(new Car($customer));
+end
+
+rule "Give 10% discount to customers older than 60"
+dialect "java"
+when
+    (
+        (
+            $customer := Customer( age > 60 )
+            and
+            exists Car ( owner == $customer )
+        )
+    )
+then
+    insert(new Car($customer));
+end
+
+
